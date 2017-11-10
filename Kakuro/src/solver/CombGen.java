@@ -1,38 +1,28 @@
-import java.util.ArrayList;
+package solver;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
+
+import model.Solution;
 
 
 public class CombGen {
-	public static void main(String[] args) {
-		
-		if(args.length == 2){
-			Set<Solution> solutions;
-		solutions = getPossibleCombinations(Integer.parseInt(args[0]),Integer.parseInt(args[1]));
-		for(Solution solution : solutions){
-			for(int value : solution.getValues())
-				System.out.print(value + " ");
-			System.out.print("; ");
-		}
-		System.out.println();
-		}
 	
-		
-	}
 
-	private static Set<Solution> getPossibleCombinations(int num, int cells) {
+	public static Set<Solution> getPossibleCombinations(int num, int cells) {
 		Set<Solution> result = new HashSet<Solution>();
-		if(cells > 2){
+		if(cells > 2){ // esplorazione delle soluzioni
 			int tempFactor = num / cells;
-			for(int i = 1; i < tempFactor; i++){
-				Set<Solution> innerSolutions = getPossibleCombinations(num - i, cells - 1);
+			for(int firstFactor = 1; firstFactor < tempFactor; firstFactor++){
+				Set<Solution> innerSolutions = getPossibleCombinations(num - firstFactor, cells - 1);
 				for(Solution solNew : innerSolutions){
 				Solution sol = new Solution();
 				boolean validSolution = true;
-				sol.addSolution(i);			
+				sol.addSolution(firstFactor);			
 					for(int value : solNew.getValues()){
-						if(value == i) validSolution = false;
+						if(value == firstFactor){
+							validSolution = false;
+							break;
+						}
 						sol.addSolution(value);
 					}
 					if(validSolution) result.add(sol);
@@ -40,7 +30,7 @@ public class CombGen {
 				
 			}
 		}
-		else // cells == 2
+		else // cells == 2, caso radice
 		{
 			int firstFactor = num / 2 + 1; // l'addendo più grande
 			int secondFactor = num - firstFactor; // l'addendo più piccolo
