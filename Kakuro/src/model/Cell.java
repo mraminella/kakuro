@@ -4,19 +4,33 @@ import java.util.Set;
 
 public class Cell {
 	private Color color;
-	private Set<Integer> values;
+	private Set<Solution> solutions;
 	private int horizSum;
 	private int vertSum;
+	private int horizSumLength;
+	private int vertSumLength;
 	
+	public int getHorizSumLength() {
+		return horizSumLength;
+	}
+	public void setHorizSumLength(int horizSumLength) {
+		this.horizSumLength = horizSumLength;
+	}
+	public int getVertSumLength() {
+		return vertSumLength;
+	}
+	public void setVertSumLength(int vertSumLength) {
+		this.vertSumLength = vertSumLength;
+	}
 	public Cell(int horizSum, int vertSum) {
 		super();
 		this.horizSum = horizSum;
 		this.vertSum = vertSum;
 		this.color = Color.black;
 	}
-	public Cell(Set<Integer> values) {
+	public Cell(Set<Solution> solutions) {
 		super();
-		this.values = values;
+		this.solutions = solutions;
 		this.color = Color.white;
 	}
 	public Color getColor() {
@@ -25,11 +39,11 @@ public class Cell {
 	public void setColor(Color color) {
 		this.color = color;
 	}
-	public Set<Integer> getValues() {
-		return values;
+	public Set<Solution> getSolutions() {
+		return solutions;
 	}
-	public void setValues(Set<Integer> values) {
-		this.values = values;
+	public void setValues(Set<Solution> solutions) {
+		this.solutions = solutions;
 	}
 	public int getHorizSum() {
 		return horizSum;
@@ -49,16 +63,20 @@ public class Cell {
 		StringBuilder sb = new StringBuilder();
 		if(this.color.equals(Color.white)){
 			sb.append("w");
-			for(int value : values){
-				sb.append(value);
+			for(Solution solution : this.solutions){
+				sb.append(solution.toString());
 				sb.append(",");
 			}
 		} else
 			{
 			sb.append("b");
 			sb.append(horizSum);
+			sb.append(" l=");
+			sb.append(horizSumLength);
 			sb.append("/");
 			sb.append(vertSum);
+			sb.append(" l=");
+			sb.append(vertSumLength);
 			}
 		return sb.toString();
 		

@@ -23,6 +23,8 @@ public static void main(String[] args) {
 	*/
 	
 	Problem problem = ProblemReader.readProblema();
+	problem.obtainLengthForCells();
+	problem.fillSolutions();
 		System.out.println(problem.toString());
 	}
 }

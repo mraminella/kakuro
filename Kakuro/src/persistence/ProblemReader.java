@@ -13,6 +13,7 @@ import java.util.StringTokenizer;
 import model.Cell;
 import model.Color;
 import model.Problem;
+import model.Solution;
 
 public class ProblemReader {
 	final static String FILE_NAME = "problema.txt";
@@ -36,7 +37,7 @@ public class ProblemReader {
 					while(currentColumn < columns){
 						int value = Integer.parseInt(st.nextToken("/").substring(1));
 						if(value == -1){
-							Set<Integer> values = new HashSet<Integer>();
+							Set<Solution> values = new HashSet<Solution>();
 							result.setCell(currentRow, currentColumn, new Cell(values)); 
 							value = Integer.parseInt(st.nextToken(",").substring(1));
 							

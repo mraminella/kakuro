@@ -29,4 +29,14 @@ public class Solution {
 	    Solution otherSolution = (Solution) o;
 	   return this.values.equals(otherSolution.getValues());
 	}
+	
+	@Override
+	public String toString(){
+		StringBuilder sb = new StringBuilder();
+		for(int solution : values){
+			sb.append(solution);
+			sb.append(",");
+		}
+		return sb.toString();
+	}
 }
