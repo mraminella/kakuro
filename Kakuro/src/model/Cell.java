@@ -1,17 +1,24 @@
 package model;
+import java.util.HashSet;
 import java.util.Set;
 
 
 public class Cell {
 	private Color color;
+	private Set<Solution> horizSolutions;
+	private Set<Solution> vertSolutions;
 	private Set<Solution> solutions;
 	private int horizSum;
 	private int vertSum;
 	private int horizSumLength;
 	private int vertSumLength;
+	private int solutionsAmount;
 	
 	public int getHorizSumLength() {
 		return horizSumLength;
+	}
+	public void setSolutions(Set<Solution> solutions) {
+		this.solutions = solutions;
 	}
 	public void setHorizSumLength(int horizSumLength) {
 		this.horizSumLength = horizSumLength;
@@ -26,11 +33,26 @@ public class Cell {
 		super();
 		this.horizSum = horizSum;
 		this.vertSum = vertSum;
+		horizSolutions = new HashSet<Solution>();
+		vertSolutions = new HashSet<Solution>();
 		this.color = Color.black;
 	}
-	public Cell(Set<Solution> solutions) {
+	public void incSolutionsAmount() {
+		solutionsAmount++;
+	}
+	public void decSolutionsAmount() {
+		solutionsAmount--;
+	}
+	public int getSolutionsAmout() {
+		return solutionsAmount;
+	}
+	public void setSolutionsAmount(int solutionsAmount) {
+		this.solutionsAmount = solutionsAmount;
+	}
+	public Cell() {
 		super();
-		this.solutions = solutions;
+		solutions = new HashSet<Solution>();
+		solutionsAmount = 0;
 		this.color = Color.white;
 	}
 	public Color getColor() {
@@ -42,14 +64,17 @@ public class Cell {
 	public Set<Solution> getSolutions() {
 		return solutions;
 	}
-	public void setValues(Set<Solution> solutions) {
-		this.solutions = solutions;
-	}
 	public int getHorizSum() {
 		return horizSum;
 	}
 	public void setHorizSum(int horizSum) {
 		this.horizSum = horizSum;
+	}
+	public Set<Solution> getHorizSolutions() {
+		return horizSolutions;
+	}
+	public Set<Solution> getVertSolutions() {
+		return vertSolutions;
 	}
 	public int getVertSum() {
 		return vertSum;
@@ -63,20 +88,29 @@ public class Cell {
 		StringBuilder sb = new StringBuilder();
 		if(this.color.equals(Color.white)){
 			sb.append("w");
+			sb.append("%");
+			sb.append(solutionsAmount);
 			for(Solution solution : this.solutions){
 				sb.append(solution.toString());
-				sb.append(",");
+				sb.append(";");
 			}
 		} else
 			{
 			sb.append("b");
 			sb.append(horizSum);
-			sb.append(" l=");
-			sb.append(horizSumLength);
+			sb.append(":");
+			for(Solution solution : this.horizSolutions){
+				sb.append(solution.toString());
+				sb.append(";");
+			}
 			sb.append("/");
 			sb.append(vertSum);
-			sb.append(" l=");
-			sb.append(vertSumLength);
+			sb.append(":");
+			for(Solution solution : this.vertSolutions){
+				sb.append(solution.toString());
+				sb.append(";");
+			}
+			
 			}
 		return sb.toString();
 		

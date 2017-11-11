@@ -37,8 +37,8 @@ public class ProblemReader {
 					while(currentColumn < columns){
 						int value = Integer.parseInt(st.nextToken("/").substring(1));
 						if(value == -1){
-							Set<Solution> values = new HashSet<Solution>();
-							result.setCell(currentRow, currentColumn, new Cell(values)); 
+							
+							result.setCell(currentRow, currentColumn, new Cell()); 
 							value = Integer.parseInt(st.nextToken(",").substring(1));
 							
 						} 
