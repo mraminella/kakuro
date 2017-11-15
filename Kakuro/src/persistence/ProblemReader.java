@@ -53,7 +53,8 @@ public class ProblemReader {
 					currentRow++;
 				}
 				
-
+				result.initCells();
+				
 		} catch (IOException e) {
 			System.out.println("File problema.txt inesistente o malformato");
 		}

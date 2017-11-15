@@ -24,8 +24,20 @@ public static void main(String[] args) {
 	
 	Problem problem = ProblemReader.readProblema();
 	problem.obtainLengthForCells();
-	problem.fillSolutions();
-	problem.findSuitableSolutionsAmount();
+	problem.fillBlackSolutions();
+	problem.fillWhiteSolutions();
+	// problem.findSuitableSolutionsAmount();
+	System.out.println(problem.toString());
+	while(true) {
+		problem.solve();
 		System.out.println(problem.toString());
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+		
 	}
 }

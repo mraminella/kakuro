@@ -1,5 +1,5 @@
 package model;
 
 public enum Color {
-	white, black
+	white, black, solved
 }

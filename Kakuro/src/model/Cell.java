@@ -7,17 +7,21 @@ public class Cell {
 	private Color color;
 	private Set<Solution> horizSolutions;
 	private Set<Solution> vertSolutions;
-	private Set<Solution> solutions;
+	private Set<Integer> solutions;
 	private int horizSum;
 	private int vertSum;
-	private int horizSumLength;
-	private int vertSumLength;
-	private int solutionsAmount;
+	private int horizSumLength; // non serve
+	private int vertSumLength; // non serve
+	private int solutionsAmount; // non serve
+	public Cell horizRule;
+	public Cell vertRule;
+	public Cell right;
+	public Cell down;
 	
 	public int getHorizSumLength() {
 		return horizSumLength;
 	}
-	public void setSolutions(Set<Solution> solutions) {
+	public void setSolutions(Set<Integer> solutions) {
 		this.solutions = solutions;
 	}
 	public void setHorizSumLength(int horizSumLength) {
@@ -51,7 +55,7 @@ public class Cell {
 	}
 	public Cell() {
 		super();
-		solutions = new HashSet<Solution>();
+		solutions = new HashSet<Integer>();
 		solutionsAmount = 0;
 		this.color = Color.white;
 	}
@@ -61,7 +65,7 @@ public class Cell {
 	public void setColor(Color color) {
 		this.color = color;
 	}
-	public Set<Solution> getSolutions() {
+	public Set<Integer> getSolutions() {
 		return solutions;
 	}
 	public int getHorizSum() {
@@ -88,30 +92,38 @@ public class Cell {
 		StringBuilder sb = new StringBuilder();
 		if(this.color.equals(Color.white)){
 			sb.append("w");
-			sb.append("%");
-			sb.append(solutionsAmount);
-			for(Solution solution : this.solutions){
+			sb.append(" ");
+			// sb.append(this.horizRule != null ? this.horizRule.toString() : "null");
+			// sb.append(this.vertRule != null ? this.vertRule.toString() : "null");
+			//sb.append(solutionsAmount);
+			for(Integer solution : this.solutions){
 				sb.append(solution.toString());
 				sb.append(";");
 			}
-		} else
+		} else if(this.color.equals(Color.black))
 			{
 			sb.append("b");
 			sb.append(horizSum);
+			/*
 			sb.append(":");
 			for(Solution solution : this.horizSolutions){
 				sb.append(solution.toString());
 				sb.append(";");
-			}
+			} */
 			sb.append("/");
 			sb.append(vertSum);
+			/*
 			sb.append(":");
 			for(Solution solution : this.vertSolutions){
 				sb.append(solution.toString());
 				sb.append(";");
 			}
-			
+			*/
 			}
+		else if(this.color.equals(Color.solved)) {
+			sb.append("S ");
+			sb.append(this.solutions.iterator().next());
+		}
 		return sb.toString();
 		
 	}

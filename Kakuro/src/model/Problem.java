@@ -1,5 +1,7 @@
 package model;
 
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import solver.CombGen;
@@ -15,8 +17,17 @@ public class Problem {
 		this.cells = new Cell[nRows][nColumns];
 		this.nRows = nRows;
 		this.nColumns = nColumns;
+		
 	}
 
+	public void initCells() {
+		for(int i=0;i<nRows;i++){
+			for(int j=0;j<nColumns;j++){
+				if(j + 1 < nColumns) cells[i][j].right = cells[i][j+1];
+				if(i + 1 < nRows) cells[i][j].down = cells[i+1][j];
+			}
+		}
+	}
 	public Cell getCell(int row, int column){
 		return cells[row][column];
 	}
@@ -33,23 +44,31 @@ public class Problem {
 					if(cells[i][j].getHorizSum() > 0){ // ho un vincolo di somma orizzontale (parola orizzontale)
 						length = j;
 						length++;
-						while(length < nColumns - 1 && cells[i][length].getColor().equals(Color.white))
+						while(length < nColumns  && cells[i][length].getColor().equals(Color.white)) {
+						
+							cells[i][length].horizRule = cells[i][j];
 							length++;
-						cells[i][j].setHorizSumLength(length - j);
+						}
+						cells[i][j].setHorizSumLength(length - j - 1);
+						
 					}
 					if(cells[i][j].getVertSum() > 0){ // ho un vincolo di somma verticale (parola verticale)
 						length = i;
 						length++;
-						while(length < nRows - 1 && cells[length][j].getColor().equals(Color.white))
+						while(length < nRows && cells[length][j].getColor().equals(Color.white)) {
+						
+							cells[length][j].vertRule = cells[i][j];
 							length++;
-						cells[i][j].setVertSumLength(length - i);
+						}
+						cells[i][j].setVertSumLength(length - i - 1);
+						
 					}
 				}
 			}
 		}
 	}
 
-	public void fillSolutions(){ // riempie tutte le soluzioni del mondo 
+	public void fillBlackSolutions(){ // riempie tutte le soluzioni del mondo 
 
 		for(int i=0;i<nRows;i++){ // ciclo sulle righe
 			for(int j=0;j<nColumns;j++){ // ciclo sulle colonne
@@ -57,66 +76,130 @@ public class Problem {
 					if(cells[i][j].getHorizSum() > 0){ // ho un vincolo di somma orizzontale (parola orizzontale)
 						cells[i][j].getHorizSolutions().addAll(CombGen.getPossibleCombinations(cells[i][j].getHorizSum(), cells[i][j].getHorizSumLength()));
 					}
-				}
-				if(cells[i][j].getVertSum() > 0){ // ho un vincolo di somma verticale (parola verticale)
-					cells[i][j].getVertSolutions().addAll(CombGen.getPossibleCombinations(cells[i][j].getVertSum(), cells[i][j].getVertSumLength()));
 
-
-				}
-			}
-		}
-			/*
-		int length;
-		Set<Solution> solutions;
-		for(int i=0;i<nRows;i++){ // ciclo sulle righe
-			for(int j=0;j<nColumns;j++){ // ciclo sulle colonne
-				if(cells[i][j].getColor().equals(Color.black)){
-					if(cells[i][j].getHorizSum() > 0){ // ho un vincolo di somma orizzontale (parola orizzontale)
-						solutions = CombGen.getPossibleCombinations(cells[i][j].getHorizSum(), cells[i][j].getHorizSumLength());
-						length = cells[i][j].getHorizSumLength();
-						while(length > 0){ // vado a inserire la soluzione su tutte le colonne...
-							cells[i][length].getSolutions().addAll(solutions);
-							length--;
-						}
-						if(cells[i][j].getVertSum() > 0){ // ho un vincolo di somma verticale (parola verticale)
-							length = cells[i][j].getVertSumLength();
-							solutions = CombGen.getPossibleCombinations(cells[i][j].getVertSum(), cells[i][j].getVertSumLength());
-							while(length > 0){ // vado a inserire la soluzione su  tutte le righe..
-								cells[length][j].getSolutions().addAll(solutions);
-								length--;
-							}
-						}
-					}
-				}
-			}
-		}
-			 */
-		}
-
-	public void findSuitableSolutionsAmount() {
-		int length;
-		for(int i=0;i<nRows;i++){
-			for(int j=0;j<nColumns;j++){
-				if(cells[i][j].getColor().equals(Color.black)){
-					if(cells[i][j].getHorizSum() > 0){ // ho un vincolo di somma orizzontale (parola orizzontale)
-						length = j;
-						length++;
-						while(length < cells[i][j].getHorizSumLength())
-							length++;
-						cells[i][length].setSolutionsAmount(cells[i][length].getSolutionsAmout() + cells[i][j].getHorizSolutions().size());
-					}
 					if(cells[i][j].getVertSum() > 0){ // ho un vincolo di somma verticale (parola verticale)
-						length = i;
-						length++;
-						while(length < cells[i][j].getVertSumLength())
-							length++;
-						cells[length][j].setSolutionsAmount(cells[length][i].getSolutionsAmout() + cells[i][j].getVertSolutions().size());
+						cells[i][j].getVertSolutions().addAll(CombGen.getPossibleCombinations(cells[i][j].getVertSum(), cells[i][j].getVertSumLength()));
+
 					}
+
+
 				}
 			}
 		}
 
 	}
+	
+	public void fillWhiteSolutions(){ // riempie tutte le soluzioni del mondo 
+		for(int i=0;i<nRows;i++){ // ciclo sulle righe
+			for(int j=0;j<nColumns;j++){ // ciclo sulle colonne
+				if(cells[i][j].getColor().equals(Color.white)){
+					cells[i][j].setSolutions(intersectSolutions(cells[i][j].horizRule.getHorizSolutions(),cells[i][j].vertRule.getVertSolutions()));
+				}
+			}
+		}
+		
+	}
+
+	public Cell getCellWithLessSolutions() {
+		int min = 10;
+		Cell result = null;
+		for(int i=0;i<nRows;i++){ // ciclo sulle righe
+			for(int j=0;j<nColumns;j++){ // ciclo sulle colonne
+				if(cells[i][j].getColor().equals(Color.white)){
+					if(cells[i][j].getSolutions().size() < min) {
+						min = cells[i][j].getSolutions().size();
+						result = cells[i][j];
+					}
+				}
+			}
+		}
+		return result;
+
+	}
+	
+	public void solve() {
+		Cell curr = getCellWithLessSolutions();
+		if (curr.getSolutions().size() == 1) {
+			cleanOtherSolutions(curr);
+			 curr.setColor(Color.solved);
+		}
+		else {
+			
+		}
+	}
+	
+	private void cleanOtherSolutions(Cell cell) {
+		int solution = cell.getSolutions().iterator().next();
+
+		Cell toClean; 
+		// adessso devo togliere le soluzioni che non comprendono questo numero
+		Iterator<Solution> iterator = cell.horizRule.getHorizSolutions().iterator();
+		while(iterator.hasNext()) {
+			Solution horizRuleSolution = iterator.next();
+			if(!horizRuleSolution.getValues().contains(solution)) {
+				iterator.remove();
+			}
+		}
+		iterator = cell.horizRule.getVertSolutions().iterator();
+		while(iterator.hasNext()) {
+			Solution vertRuleSolution = iterator.next();
+			if(!vertRuleSolution.getValues().contains(solution)) {
+				iterator.remove();
+			}
+		}
+		
+		 toClean = cell.horizRule.right;
+		while(toClean != null && toClean.getColor().equals(Color.white)) {
+			toClean.getSolutions().clear();
+			toClean.getSolutions().addAll(intersectSolutions(toClean.horizRule.getHorizSolutions(),toClean.vertRule.getVertSolutions()));
+			toClean = toClean.right;
+		}
+		toClean = cell.vertRule.down;
+		while(toClean != null && toClean.getColor().equals(Color.white)) {
+			toClean.getSolutions().clear();
+			toClean.getSolutions().addAll(intersectSolutions(toClean.horizRule.getHorizSolutions(),toClean.vertRule.getVertSolutions()));
+			toClean = toClean.down;
+		}
+		
+		toClean = cell.horizRule.right;
+		while(toClean != null && toClean.getColor().equals(Color.white)) {
+			toClean.getSolutions().remove(solution);
+			toClean = toClean.right;
+		}
+		toClean = cell.vertRule.down;
+		while(toClean != null && toClean.getColor().equals(Color.white)) {
+			toClean.getSolutions().remove(solution);
+			toClean = toClean.down;
+		}
+		cell.getSolutions().add(solution);
+		/*
+		while(toClean != null && toClean.getColor().equals(Color.white)) {
+			toClean.getSolutions().remove(solution);
+			toClean = toClean.right;
+		}
+		toClean = cell.vertRule.down;
+		while(toClean != null && toClean.getColor().equals(Color.white)) {
+			toClean.getSolutions().remove(solution);
+			toClean = toClean.down;
+		}
+		cell.getSolutions().add(solution);
+		*/
+	}
+
+	public Set<Integer> intersectSolutions(Set<Solution> set1, Set<Solution> set2)
+	{
+		Set<Integer> result = new HashSet<Integer>();
+		Set<Integer> temp = new HashSet<Integer>();
+		for(Solution solution : set1) {
+			result.addAll(solution.getValues());
+		}
+		for(Solution solution : set2) {
+			temp.addAll(solution.getValues());
+		}
+		result.retainAll(temp);
+		return result;
+	}
+	
 		@Override
 		public String toString(){
 			StringBuilder sb = new StringBuilder();
