@@ -27,10 +27,13 @@ public static void main(String[] args) {
 	problem.fillBlackSolutions();
 	problem.fillWhiteSolutions();
 	// problem.findSuitableSolutionsAmount();
-	System.out.println(problem.toString());
+	//System.out.println(problem.toString());
+	Gui gui = new Gui(problem);
+	gui.setVisible(true);
 	while(true) {
 		problem.solve();
-		System.out.println(problem.toString());
+		gui = new Gui(problem);
+		gui.setVisible(true);
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {

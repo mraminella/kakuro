@@ -12,6 +12,14 @@ public class Problem {
 	int nRows;
 	int nColumns;
 
+	public int getnRows() {
+		return nRows;
+	}
+
+	public int getnColumns() {
+		return nColumns;
+	}
+
 	public Problem(int nRows, int nColumns) {
 		super();
 		this.cells = new Cell[nRows][nColumns];
@@ -129,10 +137,13 @@ public class Problem {
 	}
 	
 	private void cleanOtherSolutions(Cell cell) {
+		
+		// PREAMBOLO: questo metodo viene chiamato per una cella che ha una sola soluzione
 		int solution = cell.getSolutions().iterator().next();
 
 		Cell toClean; 
-		// adessso devo togliere le soluzioni che non comprendono questo numero
+		// adesso devo togliere le soluzioni che non comprendono questo numero
+		// Tolgo le soluzioni senza il numero della soluzione dalla regola orrizzontale
 		Iterator<Solution> iterator = cell.horizRule.getHorizSolutions().iterator();
 		while(iterator.hasNext()) {
 			Solution horizRuleSolution = iterator.next();
@@ -140,7 +151,9 @@ public class Problem {
 				iterator.remove();
 			}
 		}
-		iterator = cell.horizRule.getVertSolutions().iterator();
+		
+		// Tolgo le soluzioni senza il 6 dalla regola verticale
+		iterator = cell.vertRule.getVertSolutions().iterator();
 		while(iterator.hasNext()) {
 			Solution vertRuleSolution = iterator.next();
 			if(!vertRuleSolution.getValues().contains(solution)) {
@@ -148,18 +161,23 @@ public class Problem {
 			}
 		}
 		
-		 toClean = cell.horizRule.right;
+		// Ricalcolo tutte le soluzioni possibili a partire dalle combinazioni rimanenti
+		toClean = cell.horizRule.right; // scorro sugli elementi a destra della cella nera col vincolo orizzontale
 		while(toClean != null && toClean.getColor().equals(Color.white)) {
 			toClean.getSolutions().clear();
 			toClean.getSolutions().addAll(intersectSolutions(toClean.horizRule.getHorizSolutions(),toClean.vertRule.getVertSolutions()));
 			toClean = toClean.right;
 		}
-		toClean = cell.vertRule.down;
+		toClean = cell.vertRule.down; // scorro sugli elementi sotto della cella nera col vincolo verticale
 		while(toClean != null && toClean.getColor().equals(Color.white)) {
 			toClean.getSolutions().clear();
 			toClean.getSolutions().addAll(intersectSolutions(toClean.horizRule.getHorizSolutions(),toClean.vertRule.getVertSolutions()));
 			toClean = toClean.down;
 		}
+		
+		// Dato che le nuove combinazioni includeranno anche il numero della soluzione
+		// che ho appena trovato, dovrò togliere tale numero dalle altre celle,
+		// che non possono avere tale soluzione
 		
 		toClean = cell.horizRule.right;
 		while(toClean != null && toClean.getColor().equals(Color.white)) {
