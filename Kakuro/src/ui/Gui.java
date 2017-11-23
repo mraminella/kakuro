@@ -69,7 +69,7 @@ public class Gui extends JFrame {
 			);
 			
 			*/
-		table.getColumnModel().getColumn(0).setResizable(false);
+		table.getColumnModel().getColumn(0).setResizable(true);
 		table.setRowHeight(50);
 	//	for(int i=0; i<table.getRowCount(); i++)
 		//	for(int j=0; j<table.getColumnCount(); j++) {
@@ -79,6 +79,11 @@ public class Gui extends JFrame {
 		panel.add(table);
 		this.setLocation(400,200);
 		this.pack();
+		
+	}
+	
+	public void update() {
+		table.updateUI();
 	}
 
 }

@@ -132,8 +132,38 @@ public class Problem {
 			 curr.setColor(Color.solved);
 		}
 		else {
-			
+			iterativeSampling(curr);
 		}
+	}
+	
+	private void iterativeSampling(Cell cell) {
+		Set<Integer> solutions = new HashSet<Integer>();
+		solutions.addAll(cell.getSolutions());
+		Iterator<Integer> possibleSolutions = solutions.iterator();
+		do{
+			cell.getSolutions().addAll(solutions);
+			cell.getSolutions().clear();
+			cell.getSolutions().add(possibleSolutions.next());
+			solve();
+		}while(!isSolutionOk(cell));
+	}
+
+	
+	private boolean isSolutionOk(Cell cell) {
+		Cell toCheck;
+		toCheck = cell.horizRule.right;
+		while(toCheck != null && toCheck.getColor().equals(Color.white)) {
+			if(toCheck.getSolutions().isEmpty()) 
+				return false;
+			toCheck = toCheck.right;
+		}
+		toCheck = cell.vertRule.down;
+		while(toCheck != null && toCheck.getColor().equals(Color.white)) {
+			if(toCheck.getSolutions().isEmpty()) 
+				return false;
+			toCheck = toCheck.down;
+		}
+		return true;
 	}
 	
 	private void cleanOtherSolutions(Cell cell) {
@@ -163,13 +193,13 @@ public class Problem {
 		
 		// Ricalcolo tutte le soluzioni possibili a partire dalle combinazioni rimanenti
 		toClean = cell.horizRule.right; // scorro sugli elementi a destra della cella nera col vincolo orizzontale
-		while(toClean != null && toClean.getColor().equals(Color.white)) {
+		while(toClean != null && toClean.getColor().equals(Color.white) && toClean != cell) {
 			toClean.getSolutions().clear();
 			toClean.getSolutions().addAll(intersectSolutions(toClean.horizRule.getHorizSolutions(),toClean.vertRule.getVertSolutions()));
 			toClean = toClean.right;
 		}
 		toClean = cell.vertRule.down; // scorro sugli elementi sotto della cella nera col vincolo verticale
-		while(toClean != null && toClean.getColor().equals(Color.white)) {
+		while(toClean != null && toClean.getColor().equals(Color.white) && toClean != cell) {
 			toClean.getSolutions().clear();
 			toClean.getSolutions().addAll(intersectSolutions(toClean.horizRule.getHorizSolutions(),toClean.vertRule.getVertSolutions()));
 			toClean = toClean.down;
@@ -180,28 +210,21 @@ public class Problem {
 		// che non possono avere tale soluzione
 		
 		toClean = cell.horizRule.right;
-		while(toClean != null && toClean.getColor().equals(Color.white)) {
-			toClean.getSolutions().remove(solution);
+		while(toClean != null && toClean.getColor().equals(Color.white)  ) {
+			if(toClean != cell){
+				toClean.getSolutions().remove(solution);
+		
+			}
 			toClean = toClean.right;
 		}
 		toClean = cell.vertRule.down;
 		while(toClean != null && toClean.getColor().equals(Color.white)) {
+			if(toClean != cell){
 			toClean.getSolutions().remove(solution);
+			}
 			toClean = toClean.down;
 		}
-		cell.getSolutions().add(solution);
-		/*
-		while(toClean != null && toClean.getColor().equals(Color.white)) {
-			toClean.getSolutions().remove(solution);
-			toClean = toClean.right;
-		}
-		toClean = cell.vertRule.down;
-		while(toClean != null && toClean.getColor().equals(Color.white)) {
-			toClean.getSolutions().remove(solution);
-			toClean = toClean.down;
-		}
-		cell.getSolutions().add(solution);
-		*/
+		
 	}
 
 	public Set<Integer> intersectSolutions(Set<Solution> set1, Set<Solution> set2)

@@ -104,21 +104,26 @@ public class Cell {
 			{
 			sb.append("b");
 			sb.append(horizSum);
-			/*
-			sb.append(":");
+			
+			sb.append(":");/*
 			for(Solution solution : this.horizSolutions){
 				sb.append(solution.toString());
 				sb.append(";");
 			} */
+			sb.append(this.horizSolutions.size());
+			//sb.append('\n');
 			sb.append("/");
 			sb.append(vertSum);
-			/*
+			
 			sb.append(":");
+			/*
 			for(Solution solution : this.vertSolutions){
 				sb.append(solution.toString());
 				sb.append(";");
 			}
 			*/
+			sb.append(this.vertSolutions.size());
+			
 			}
 		else if(this.color.equals(Color.solved)) {
 			sb.append("S ");

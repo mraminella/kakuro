@@ -30,7 +30,9 @@ public static void main(String[] args) {
 	//System.out.println(problem.toString());
 	Gui gui = new Gui(problem);
 	gui.setVisible(true);
-	while(true) {
+	int i = 0;
+	while(i < 13) {
+		i++;
 		problem.solve();
 		gui = new Gui(problem);
 		gui.setVisible(true);
