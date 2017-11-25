@@ -5,18 +5,20 @@ import java.util.Set;
 
 public class Cell {
 	private Color color;
-	private Set<Solution> horizSolutions;
-	private Set<Solution> vertSolutions;
-	private Set<Integer> solutions;
-	private int horizSum;
-	private int vertSum;
+	private Set<Solution> horizSolutions; // Se la cella è nera e ha un vincolo verticale, sono 
+											// le possibili combinazioni di somme
+	private Set<Solution> vertSolutions;	// Come sopra, per il vincolo verticale
+	private Set<Integer> solutions;		// Se la cella è bianca, sono le possibili cifre trovate
+	private int horizSum;	// Il vincolo di somma orizzontale
+	private int vertSum;		/// Il vincolo di somma verticale
 	private int horizSumLength; // non serve
 	private int vertSumLength; // non serve
 	private int solutionsAmount; // non serve
-	public Cell horizRule;
-	public Cell vertRule;
-	public Cell right;
-	public Cell down;
+	public Cell horizRule; // Se la cella è bianca, è un vettore alla cella nera
+							// che contiene la regola di somma orizzontale
+	public Cell vertRule;	// Idem con la regola verticale
+	public Cell right;		// La cella a destra
+	public Cell down;		// La cella sotto
 	
 	public int getHorizSumLength() {
 		return horizSumLength;
