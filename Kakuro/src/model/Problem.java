@@ -28,7 +28,7 @@ public class Problem {
 		
 	}
 
-	public void initCells() {
+	public void initCells() { // Inizializza i puntatori della cella "a sinistra" e "sotto" di ogni risp. cella
 		for(int i=0;i<nRows;i++){
 			for(int j=0;j<nColumns;j++){
 				if(j + 1 < nColumns) cells[i][j].right = cells[i][j+1];
@@ -76,8 +76,8 @@ public class Problem {
 		}
 	}
 
-	public void fillBlackSolutions(){ // riempie tutte le soluzioni del mondo 
-
+	public void fillBlackSolutions(){ // Inizializzo le possibili tuple di soluzioni
+										// possibili per ogni vincolo
 		for(int i=0;i<nRows;i++){ // ciclo sulle righe
 			for(int j=0;j<nColumns;j++){ // ciclo sulle colonne
 				if(cells[i][j].getColor().equals(Color.black)){
@@ -97,7 +97,9 @@ public class Problem {
 
 	}
 	
-	public void fillWhiteSolutions(){ // riempie tutte le soluzioni del mondo 
+	public void fillWhiteSolutions(){ // A partire dalle possibili tuple nelle celle nere
+									// confronta per ogni cella bianca tutte le combinazioni
+									// e determina quali cifre da 1 a 9 sono "papabili"
 		for(int i=0;i<nRows;i++){ // ciclo sulle righe
 			for(int j=0;j<nColumns;j++){ // ciclo sulle colonne
 				if(cells[i][j].getColor().equals(Color.white)){
@@ -108,7 +110,7 @@ public class Problem {
 		
 	}
 
-	public Cell getCellWithLessSolutions() {
+	public Cell getCellWithLessSolutions() { // trova la cella bianca con meno cifre "papabili"
 		int min = 10;
 		Cell result = null;
 		for(int i=0;i<nRows;i++){ // ciclo sulle righe
@@ -125,7 +127,8 @@ public class Problem {
 
 	}
 	
-	public void solve() {
+	public void solve() { // se c'è una soluzione già pronta la applica,
+							// altrimenti applica l'algoritmo iterativo (ancora da completare)
 		Cell curr = getCellWithLessSolutions();
 		if (curr.getSolutions().size() == 1) {
 			cleanOtherSolutions(curr);
@@ -136,7 +139,11 @@ public class Problem {
 		}
 	}
 	
-	private void iterativeSampling(Cell cell) {
+	private void iterativeSampling(Cell cell) { 
+		/*
+		 * Algoritmo incompleto: non c'è nessuno backtrack e non vi è un
+		 * vero controllo della compatibilità della soluzione
+		 */
 		Set<Integer> solutions = new HashSet<Integer>();
 		solutions.addAll(cell.getSolutions());
 		Iterator<Integer> possibleSolutions = solutions.iterator();
@@ -150,6 +157,9 @@ public class Problem {
 
 	
 	private boolean isSolutionOk(Cell cell) {
+		/*
+		 * Non è un vero controllo
+		 */
 		Cell toCheck;
 		toCheck = cell.horizRule.right;
 		while(toCheck != null && toCheck.getColor().equals(Color.white)) {
@@ -169,10 +179,11 @@ public class Problem {
 	private void cleanOtherSolutions(Cell cell) {
 		
 		// PREAMBOLO: questo metodo viene chiamato per una cella che ha una sola soluzione
+		// possibile
 		int solution = cell.getSolutions().iterator().next();
 
 		Cell toClean; 
-		// adesso devo togliere le soluzioni che non comprendono questo numero
+		// adesso devo togliere le combinazioni che non comprendono questo numero
 		// Tolgo le soluzioni senza il numero della soluzione dalla regola orrizzontale
 		Iterator<Solution> iterator = cell.horizRule.getHorizSolutions().iterator();
 		while(iterator.hasNext()) {
@@ -182,7 +193,7 @@ public class Problem {
 			}
 		}
 		
-		// Tolgo le soluzioni senza il 6 dalla regola verticale
+		// Tolgo le combinazioni senza la soluzione dalla regola verticale
 		iterator = cell.vertRule.getVertSolutions().iterator();
 		while(iterator.hasNext()) {
 			Solution vertRuleSolution = iterator.next();
@@ -191,6 +202,7 @@ public class Problem {
 			}
 		}
 		
+		/*
 		// Ricalcolo tutte le soluzioni possibili a partire dalle combinazioni rimanenti
 		toClean = cell.horizRule.right; // scorro sugli elementi a destra della cella nera col vincolo orizzontale
 		while(toClean != null && toClean.getColor().equals(Color.white) && toClean != cell) {
@@ -204,11 +216,15 @@ public class Problem {
 			toClean.getSolutions().addAll(intersectSolutions(toClean.horizRule.getHorizSolutions(),toClean.vertRule.getVertSolutions()));
 			toClean = toClean.down;
 		}
+		*/
 		
-		// Dato che le nuove combinazioni includeranno anche il numero della soluzione
-		// che ho appena trovato, dovrò togliere tale numero dalle altre celle,
+		fillWhiteSolutions(); // Ricalcolo le soluzioni possibili su tutto il kakuro, come dice Civo
+		cell.getSolutions().clear();
+		cell.getSolutions().add(solution);
+		
+		// Dato che le nuove cifre possibili nelle bianche includeranno anche il numero della soluzione
+		// che ho appena trovato, dovrò togliere tale numero dalle altre celle bianche,
 		// che non possono avere tale soluzione
-		
 		toClean = cell.horizRule.right;
 		while(toClean != null && toClean.getColor().equals(Color.white)  ) {
 			if(toClean != cell){
