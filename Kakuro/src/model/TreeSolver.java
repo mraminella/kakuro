@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import ui.Gui;
 
 public class TreeSolver {
 	public static Node initTree(Problem problem) {
@@ -25,41 +24,48 @@ public class TreeSolver {
 		}
 	}
 	
-	private static boolean isFather(Node node) {
-		return (node.getI() == 0 && node.getJ() == 0);
-	}
 	public static Node explore(Node node, Problem problem) {
-			
-			if(problem.isSolutionComplete()) return node;
-			if (node == null) return null;
+			/*
+			 *	ESPLORAZIONE DEPTH-FIRST RICORSIVA 
+			 * 
+			 */
+		if(problem.isSolutionComplete()) return node;
 		Iterator<Node> childrenIterator = node.getChildren().iterator();
 		Node nextChild = null;
 		while(childrenIterator.hasNext()) {
 			//Gui gui = new Gui(problem);
 			//gui.setVisible(true);
 			nextChild = childrenIterator.next();
+			Set<Integer> domain = new HashSet<Integer>(); // Salvo il dominio in caso di Rollback..
+			domain.addAll(problem.getCell(nextChild.getI(), nextChild.getJ()).getDomain()); // 	 ..
 			// Metto la soluzione del nodo in analisi nel Kakuro e vedo cosa succede
-			Set<Integer> domain = new HashSet<Integer>();
-				domain.addAll(problem.getCell(nextChild.getI(), nextChild.getJ()).getDomain());
 			problem.getCell(nextChild.getI(), nextChild.getJ()).getDomain().clear();
 			problem.getCell(nextChild.getI(), nextChild.getJ()).getDomain().add(nextChild.getValue());
+			/*
+			 * 	CSP
+			 */
 			problem.cleanOtherSolutions(problem.getCell(nextChild.getI(), nextChild.getJ()));
 			problem.getCell(nextChild.getI(), nextChild.getJ()).setColor(Color.solved);
 			createChildren(nextChild,problem.getCellWithLessSolutions());
-		//	Gui gui = new Gui(problem);
-			//gui.setVisible(true);
 			problem.clear();
+			//Gui gui = new Gui(problem);
+			//gui.setVisible(true);
 			if(problem.isSolutionOk()) {
+				/*
+				 * Ricorsione depth-first
+				 */
 				if(explore(nextChild,problem) != null) return nextChild;
 			}
-
-			domain.remove(node.getValue());
-			problem.getCell(nextChild.getI(), nextChild.getJ()).getDomain().addAll(domain);
+			/*
+			 * Rollback: la soluzione corrente è sbagliata e bisogna provare la successiva
+			 */
+			domain.remove(node.getValue()); // Rimuovo la soluzione del dominio copia..
+			childrenIterator.remove();		//.. e dal dominio sulla matrice vera
+			problem.getCell(nextChild.getI(), nextChild.getJ()).getDomain().addAll(domain); // Ripristino del dominio
 			problem.getCell(nextChild.getI(), nextChild.getJ()).setColor(Color.white);
-			problem.fillBlackSolutions();
-			problem.fillWhiteSolutions();
-			problem.clear();
-			childrenIterator.remove();
+			problem.fillBlackSolutions();	// Ripristino dei legami fa i vincoli
+			problem.fillWhiteSolutions();	// Ripristino dei domini
+			problem.clear();		
 		}
 		
 		return null;

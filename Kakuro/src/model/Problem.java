@@ -129,8 +129,7 @@ public class Problem {
 
 	}
 	
-	public void clear() { // se c'è una soluzione già pronta la applica,
-							// altrimenti applica l'algoritmo iterativo (ancora da completare)
+	public void clear() { // elimina le soluzioni già trovate dalle celle bianche
 		for(int i=0;i<nRows;i++){ // ciclo sulle righe
 			for(int j=0;j<nColumns;j++){ // ciclo sulle colonne
 				if(cells[i][j].getColor().equals(Color.solved)){
@@ -141,23 +140,6 @@ public class Problem {
 		}
 
 	}
-	
-	private void iterativeSampling(Cell cell) { 
-		/*
-		 * Algoritmo incompleto: non c'è nessuno backtrack e non vi è un
-		 * vero controllo della compatibilità della soluzione
-		 */
-		Set<Integer> solutions = new HashSet<Integer>();
-		solutions.addAll(cell.getDomain());
-		Iterator<Integer> possibleSolutions = solutions.iterator();
-		do{
-			cell.getDomain().addAll(solutions);
-			cell.getDomain().clear();
-			cell.getDomain().add(possibleSolutions.next());
-		//	solve();
-		}while(!isSolutionOk());
-	}
-
 	
 	public boolean isSolutionOk() {
 
@@ -215,7 +197,11 @@ public class Problem {
 			}
 		}
 		/*
-		// Ricalcolo tutte le soluzioni possibili a partire dalle combinazioni rimanenti
+		 * Ricalcolo tutte le soluzioni possibili a partire dalle combinazioni rimanenti
+		 * 
+		 * ELIMINATO perchè andava a far "ricomparire" celle "white" dove in realtà
+		 * la soluzione era già stata trovata
+		 *  
 		toClean = cell.horizRule.right; // scorro sugli elementi a destra della cella nera col vincolo orizzontale
 		while(toClean != null && toClean.getColor().equals(Color.white) && toClean != cell) {
 			toClean.getDomain().clear();
@@ -228,6 +214,9 @@ public class Problem {
 			toClean.getDomain().addAll(intersectSolutions(toClean.horizRule.getHorizSolutions(),toClean.vertRule.getVertSolutions()));
 			toClean = toClean.down;
 		}
+		
+		cell.getDomain().clear();
+		cell.getDomain().add(solution);
 		*/
 		/*
 		 * 						FINE INFERENZA
@@ -235,8 +224,7 @@ public class Problem {
 		 */
 		
 		// fillWhiteSolutions(); // Ricalcolo le soluzioni possibili su tutto il kakuro, come dice Civo
-		cell.getDomain().clear();
-		cell.getDomain().add(solution);
+
 		
 		// Dato che le nuove cifre possibili nelle bianche includeranno anche il numero della soluzione
 		// che ho appena trovato, dovrò togliere tale numero dalle altre celle bianche,
@@ -245,7 +233,6 @@ public class Problem {
 		while(toClean != null && ( toClean.getColor().equals(Color.white) || toClean.getColor().equals(Color.solved)  )) {
 			if(toClean != cell){
 				toClean.getDomain().remove(solution);
-		
 			}
 			toClean = toClean.right;
 		}
