@@ -16,6 +16,7 @@ public class TreeSolver {
 	
 	public static void createChildren(Node father, Cell cell) {
 		Node child;
+		if ( cell == null) return;
 		for(Integer domainValue : cell.getDomain()) {
 				child = new Node(cell.i,cell.j);
 				child.setValue(domainValue);
@@ -45,8 +46,8 @@ public class TreeSolver {
 			problem.cleanOtherSolutions(problem.getCell(nextChild.getI(), nextChild.getJ()));
 			problem.getCell(nextChild.getI(), nextChild.getJ()).setColor(Color.solved);
 			createChildren(nextChild,problem.getCellWithLessSolutions());
-			Gui gui = new Gui(problem);
-			gui.setVisible(true);
+		//	Gui gui = new Gui(problem);
+			//gui.setVisible(true);
 			problem.clear();
 			if(problem.isSolutionOk()) {
 				if(explore(nextChild,problem) != null) return nextChild;
