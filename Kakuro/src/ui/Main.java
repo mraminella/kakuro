@@ -4,8 +4,10 @@ import java.util.Set;
 
 import persistence.ProblemReader;
 import solver.CombGen;
+import model.Node;
 import model.Problem;
 import model.Solution;
+import model.TreeSolver;
 
 public class Main {
 public static void main(String[] args) {
@@ -28,21 +30,13 @@ public static void main(String[] args) {
 	problem.fillWhiteSolutions();
 	// problem.findSuitableSolutionsAmount();
 	//System.out.println(problem.toString());
+	
+	int i = 0;
+	Node father = TreeSolver.initTree(problem);
+	father = TreeSolver.explore(father, problem);
 	Gui gui = new Gui(problem);
 	gui.setVisible(true);
-	int i = 0;
-	while(i < 13) {
-		i++;
-		problem.solve();
-		gui = new Gui(problem);
-		gui.setVisible(true);
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+	
 		
 	}
 }

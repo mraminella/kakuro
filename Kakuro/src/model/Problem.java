@@ -31,6 +31,8 @@ public class Problem {
 	public void initCells() { // Inizializza i puntatori della cella "a sinistra" e "sotto" di ogni risp. cella
 		for(int i=0;i<nRows;i++){
 			for(int j=0;j<nColumns;j++){
+				cells[i][j].i = i;
+				cells[i][j].j = j;
 				if(j + 1 < nColumns) cells[i][j].right = cells[i][j+1];
 				if(i + 1 < nRows) cells[i][j].down = cells[i+1][j];
 			}
@@ -103,7 +105,7 @@ public class Problem {
 		for(int i=0;i<nRows;i++){ // ciclo sulle righe
 			for(int j=0;j<nColumns;j++){ // ciclo sulle colonne
 				if(cells[i][j].getColor().equals(Color.white)){
-					cells[i][j].setSolutions(intersectSolutions(cells[i][j].horizRule.getHorizSolutions(),cells[i][j].vertRule.getVertSolutions()));
+					cells[i][j].setDomain(intersectSolutions(cells[i][j].horizRule.getHorizSolutions(),cells[i][j].vertRule.getVertSolutions()));
 				}
 			}
 		}
@@ -116,8 +118,8 @@ public class Problem {
 		for(int i=0;i<nRows;i++){ // ciclo sulle righe
 			for(int j=0;j<nColumns;j++){ // ciclo sulle colonne
 				if(cells[i][j].getColor().equals(Color.white)){
-					if(cells[i][j].getSolutions().size() < min) {
-						min = cells[i][j].getSolutions().size();
+					if(cells[i][j].getDomain().size() < min) {
+						min = cells[i][j].getDomain().size();
 						result = cells[i][j];
 					}
 				}
@@ -130,7 +132,7 @@ public class Problem {
 	public void solve() { // se c'è una soluzione già pronta la applica,
 							// altrimenti applica l'algoritmo iterativo (ancora da completare)
 		Cell curr = getCellWithLessSolutions();
-		if (curr.getSolutions().size() == 1) {
+		if (curr.getDomain().size() == 1) {
 			cleanOtherSolutions(curr);
 			 curr.setColor(Color.solved);
 		}
@@ -145,43 +147,49 @@ public class Problem {
 		 * vero controllo della compatibilità della soluzione
 		 */
 		Set<Integer> solutions = new HashSet<Integer>();
-		solutions.addAll(cell.getSolutions());
+		solutions.addAll(cell.getDomain());
 		Iterator<Integer> possibleSolutions = solutions.iterator();
 		do{
-			cell.getSolutions().addAll(solutions);
-			cell.getSolutions().clear();
-			cell.getSolutions().add(possibleSolutions.next());
+			cell.getDomain().addAll(solutions);
+			cell.getDomain().clear();
+			cell.getDomain().add(possibleSolutions.next());
 			solve();
-		}while(!isSolutionOk(cell));
+		}while(!isSolutionOk());
 	}
 
 	
-	private boolean isSolutionOk(Cell cell) {
-		/*
-		 * Non è un vero controllo
-		 */
-		Cell toCheck;
-		toCheck = cell.horizRule.right;
-		while(toCheck != null && toCheck.getColor().equals(Color.white)) {
-			if(toCheck.getSolutions().isEmpty()) 
-				return false;
-			toCheck = toCheck.right;
-		}
-		toCheck = cell.vertRule.down;
-		while(toCheck != null && toCheck.getColor().equals(Color.white)) {
-			if(toCheck.getSolutions().isEmpty()) 
-				return false;
-			toCheck = toCheck.down;
+	public boolean isSolutionOk() {
+
+		for(int i=0;i<nRows;i++){
+			for(int j=0;j<nColumns;j++){
+				if(cells[i][j].getColor().equals(Color.white) && cells[i][j].getDomain().isEmpty()) return false;
+			}
 		}
 		return true;
 	}
 	
-	private void cleanOtherSolutions(Cell cell) {
+	public boolean isSolutionComplete() {
+
+		for(int i=0;i<nRows;i++){
+			for(int j=0;j<nColumns;j++){
+				if(cells[i][j].getColor().equals(Color.white)) return false;
+			}
+		}
+		return true;
+	}
+	
+	public void cleanOtherSolutions(Cell cell) {
 		
 		// PREAMBOLO: questo metodo viene chiamato per una cella che ha una sola soluzione
 		// possibile
-		int solution = cell.getSolutions().iterator().next();
+		int solution = cell.getDomain().iterator().next();
 
+		
+		/*
+		 * 			INFERENZA SULLE CELLE ADIACENTI
+		 * 
+		 */
+		
 		Cell toClean; 
 		// adesso devo togliere le combinazioni che non comprendono questo numero
 		// Tolgo le soluzioni senza il numero della soluzione dalla regola orrizzontale
@@ -201,26 +209,28 @@ public class Problem {
 				iterator.remove();
 			}
 		}
-		
-		/*
+
 		// Ricalcolo tutte le soluzioni possibili a partire dalle combinazioni rimanenti
 		toClean = cell.horizRule.right; // scorro sugli elementi a destra della cella nera col vincolo orizzontale
 		while(toClean != null && toClean.getColor().equals(Color.white) && toClean != cell) {
-			toClean.getSolutions().clear();
-			toClean.getSolutions().addAll(intersectSolutions(toClean.horizRule.getHorizSolutions(),toClean.vertRule.getVertSolutions()));
+			toClean.getDomain().clear();
+			toClean.getDomain().addAll(intersectSolutions(toClean.horizRule.getHorizSolutions(),toClean.vertRule.getVertSolutions()));
 			toClean = toClean.right;
 		}
 		toClean = cell.vertRule.down; // scorro sugli elementi sotto della cella nera col vincolo verticale
 		while(toClean != null && toClean.getColor().equals(Color.white) && toClean != cell) {
-			toClean.getSolutions().clear();
-			toClean.getSolutions().addAll(intersectSolutions(toClean.horizRule.getHorizSolutions(),toClean.vertRule.getVertSolutions()));
+			toClean.getDomain().clear();
+			toClean.getDomain().addAll(intersectSolutions(toClean.horizRule.getHorizSolutions(),toClean.vertRule.getVertSolutions()));
 			toClean = toClean.down;
 		}
-		*/
+		/*
+		 * 						FINE INFERENZA
+		 * 
+		 */
 		
-		fillWhiteSolutions(); // Ricalcolo le soluzioni possibili su tutto il kakuro, come dice Civo
-		cell.getSolutions().clear();
-		cell.getSolutions().add(solution);
+		// fillWhiteSolutions(); // Ricalcolo le soluzioni possibili su tutto il kakuro, come dice Civo
+		cell.getDomain().clear();
+		cell.getDomain().add(solution);
 		
 		// Dato che le nuove cifre possibili nelle bianche includeranno anche il numero della soluzione
 		// che ho appena trovato, dovrò togliere tale numero dalle altre celle bianche,
@@ -228,7 +238,7 @@ public class Problem {
 		toClean = cell.horizRule.right;
 		while(toClean != null && toClean.getColor().equals(Color.white)  ) {
 			if(toClean != cell){
-				toClean.getSolutions().remove(solution);
+				toClean.getDomain().remove(solution);
 		
 			}
 			toClean = toClean.right;
@@ -236,7 +246,7 @@ public class Problem {
 		toClean = cell.vertRule.down;
 		while(toClean != null && toClean.getColor().equals(Color.white)) {
 			if(toClean != cell){
-			toClean.getSolutions().remove(solution);
+			toClean.getDomain().remove(solution);
 			}
 			toClean = toClean.down;
 		}

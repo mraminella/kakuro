@@ -8,12 +8,13 @@ public class Cell {
 	private Set<Solution> horizSolutions; // Se la cella è nera e ha un vincolo verticale, sono 
 											// le possibili combinazioni di somme
 	private Set<Solution> vertSolutions;	// Come sopra, per il vincolo verticale
-	private Set<Integer> solutions;		// Se la cella è bianca, sono le possibili cifre trovate
+	private Set<Integer> domain;		// Se la cella è bianca, sono le possibili cifre trovate
 	private int horizSum;	// Il vincolo di somma orizzontale
 	private int vertSum;		/// Il vincolo di somma verticale
-	private int horizSumLength; // non serve
-	private int vertSumLength; // non serve
-	private int solutionsAmount; // non serve
+	private int horizSumLength; 
+	private int vertSumLength; 
+	public int i;
+	public int j;
 	public Cell horizRule; // Se la cella è bianca, è un vettore alla cella nera
 							// che contiene la regola di somma orizzontale
 	public Cell vertRule;	// Idem con la regola verticale
@@ -23,8 +24,8 @@ public class Cell {
 	public int getHorizSumLength() {
 		return horizSumLength;
 	}
-	public void setSolutions(Set<Integer> solutions) {
-		this.solutions = solutions;
+	public void setDomain(Set<Integer> solutions) {
+		this.domain = solutions;
 	}
 	public void setHorizSumLength(int horizSumLength) {
 		this.horizSumLength = horizSumLength;
@@ -43,22 +44,10 @@ public class Cell {
 		vertSolutions = new HashSet<Solution>();
 		this.color = Color.black;
 	}
-	public void incSolutionsAmount() {
-		solutionsAmount++;
-	}
-	public void decSolutionsAmount() {
-		solutionsAmount--;
-	}
-	public int getSolutionsAmout() {
-		return solutionsAmount;
-	}
-	public void setSolutionsAmount(int solutionsAmount) {
-		this.solutionsAmount = solutionsAmount;
-	}
+
 	public Cell() {
 		super();
-		solutions = new HashSet<Integer>();
-		solutionsAmount = 0;
+		domain = new HashSet<Integer>();
 		this.color = Color.white;
 	}
 	public Color getColor() {
@@ -67,8 +56,8 @@ public class Cell {
 	public void setColor(Color color) {
 		this.color = color;
 	}
-	public Set<Integer> getSolutions() {
-		return solutions;
+	public Set<Integer> getDomain() {
+		return domain;
 	}
 	public int getHorizSum() {
 		return horizSum;
@@ -98,7 +87,7 @@ public class Cell {
 			// sb.append(this.horizRule != null ? this.horizRule.toString() : "null");
 			// sb.append(this.vertRule != null ? this.vertRule.toString() : "null");
 			//sb.append(solutionsAmount);
-			for(Integer solution : this.solutions){
+			for(Integer solution : this.domain){
 				sb.append(solution.toString());
 				sb.append(";");
 			}
@@ -129,7 +118,7 @@ public class Cell {
 			}
 		else if(this.color.equals(Color.solved)) {
 			sb.append("S ");
-			sb.append(this.solutions.iterator().next());
+			sb.append(this.domain.iterator().next());
 		}
 		return sb.toString();
 		
