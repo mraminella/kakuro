@@ -129,16 +129,17 @@ public class Problem {
 
 	}
 	
-	public void solve() { // se c'è una soluzione già pronta la applica,
+	public void clear() { // se c'è una soluzione già pronta la applica,
 							// altrimenti applica l'algoritmo iterativo (ancora da completare)
-		Cell curr = getCellWithLessSolutions();
-		if (curr.getDomain().size() == 1) {
-			cleanOtherSolutions(curr);
-			 curr.setColor(Color.solved);
+		for(int i=0;i<nRows;i++){ // ciclo sulle righe
+			for(int j=0;j<nColumns;j++){ // ciclo sulle colonne
+				if(cells[i][j].getColor().equals(Color.solved)){
+					cleanOtherSolutions(cells[i][j]);
+
+					}
+			}
 		}
-		else {
-			iterativeSampling(curr);
-		}
+
 	}
 	
 	private void iterativeSampling(Cell cell) { 
@@ -153,7 +154,7 @@ public class Problem {
 			cell.getDomain().addAll(solutions);
 			cell.getDomain().clear();
 			cell.getDomain().add(possibleSolutions.next());
-			solve();
+		//	solve();
 		}while(!isSolutionOk());
 	}
 
@@ -163,6 +164,10 @@ public class Problem {
 		for(int i=0;i<nRows;i++){
 			for(int j=0;j<nColumns;j++){
 				if(cells[i][j].getColor().equals(Color.white) && cells[i][j].getDomain().isEmpty()) return false;
+				if(cells[i][j].getColor().equals(Color.black)){
+					if(cells[i][j].getHorizSum() > 0 && cells[i][j].getHorizSolutions().size() == 0) return false;
+					if(cells[i][j].getVertSum() > 0 && cells[i][j].getVertSolutions().size() == 0) return false;
+				}
 			}
 		}
 		return true;
@@ -209,7 +214,7 @@ public class Problem {
 				iterator.remove();
 			}
 		}
-
+		/*
 		// Ricalcolo tutte le soluzioni possibili a partire dalle combinazioni rimanenti
 		toClean = cell.horizRule.right; // scorro sugli elementi a destra della cella nera col vincolo orizzontale
 		while(toClean != null && toClean.getColor().equals(Color.white) && toClean != cell) {
@@ -223,6 +228,7 @@ public class Problem {
 			toClean.getDomain().addAll(intersectSolutions(toClean.horizRule.getHorizSolutions(),toClean.vertRule.getVertSolutions()));
 			toClean = toClean.down;
 		}
+		*/
 		/*
 		 * 						FINE INFERENZA
 		 * 
@@ -236,7 +242,7 @@ public class Problem {
 		// che ho appena trovato, dovrò togliere tale numero dalle altre celle bianche,
 		// che non possono avere tale soluzione
 		toClean = cell.horizRule.right;
-		while(toClean != null && toClean.getColor().equals(Color.white)  ) {
+		while(toClean != null && ( toClean.getColor().equals(Color.white) || toClean.getColor().equals(Color.solved)  )) {
 			if(toClean != cell){
 				toClean.getDomain().remove(solution);
 		
@@ -244,7 +250,7 @@ public class Problem {
 			toClean = toClean.right;
 		}
 		toClean = cell.vertRule.down;
-		while(toClean != null && toClean.getColor().equals(Color.white)) {
+		while(toClean != null && ( toClean.getColor().equals(Color.white)|| toClean.getColor().equals(Color.solved))) {
 			if(toClean != cell){
 			toClean.getDomain().remove(solution);
 			}

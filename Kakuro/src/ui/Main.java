@@ -30,11 +30,11 @@ public static void main(String[] args) {
 	problem.fillWhiteSolutions();
 	// problem.findSuitableSolutionsAmount();
 	//System.out.println(problem.toString());
-	
-	int i = 0;
-	Node father = TreeSolver.initTree(problem);
-	father = TreeSolver.explore(father, problem);
 	Gui gui = new Gui(problem);
+	gui.setVisible(true);
+	Node father = TreeSolver.initTree(problem);
+	TreeSolver.explore(father, problem);
+	 gui = new Gui(problem);
 	gui.setVisible(true);
 	
 		
