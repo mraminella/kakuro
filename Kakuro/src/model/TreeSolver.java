@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import ui.Gui;
+
 
 public class TreeSolver {
 	public static Node initTree(Problem problem) {
@@ -48,8 +50,8 @@ public class TreeSolver {
 			problem.getCell(nextChild.getI(), nextChild.getJ()).setColor(Color.solved);
 			createChildren(nextChild,problem.getCellWithLessSolutions());
 			problem.clear();
-			//Gui gui = new Gui(problem);
-			//gui.setVisible(true);
+			Gui gui = new Gui(problem);
+			gui.setVisible(true);
 			if(problem.isSolutionOk()) {
 				/*
 				 * Ricorsione depth-first

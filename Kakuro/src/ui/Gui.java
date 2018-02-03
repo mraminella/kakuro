@@ -12,11 +12,12 @@ import javax.swing.border.LineBorder;
 import java.awt.Color;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 
 @SuppressWarnings("serial")
 public class Gui extends JFrame {
 	private JTable table;
-
+	private TableModel tableModel;
 	/**
 	 * Create the frame.
 	 */
@@ -44,8 +45,8 @@ public class Gui extends JFrame {
 				columnEditables[j] = true;
 			}
 		}
-		
-		table.setModel(new DefaultTableModel(model, names));
+		tableModel = new DefaultTableModel(model, names);
+		table.setModel(tableModel);
 			/*new Object[][] {
 				
 				MADONNA ADDOLORATA
@@ -83,7 +84,7 @@ public class Gui extends JFrame {
 	}
 	
 	public void update() {
-		table.updateUI();
+		table.repaint();
 	}
 
 }

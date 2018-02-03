@@ -1,13 +1,12 @@
 package ui;
 
-import java.util.Set;
 
+import input.InputParser;
+import input.KakuroOutputBuilder;
+import input.OutputBuilder;
+import input.SerialAdapter;
 import persistence.ProblemReader;
-import solver.CombGen;
-import model.Node;
 import model.Problem;
-import model.Solution;
-import model.TreeSolver;
 
 public class Main {
 public static void main(String[] args) {
@@ -25,16 +24,34 @@ public static void main(String[] args) {
 	*/
 	
 	Problem problem = ProblemReader.readProblema();
+	InputParser kakuroInputParser = new input.KakuroInputParser(problem);
+	SerialAdapter serialAdapter = new SerialAdapter(kakuroInputParser);
+	
+	serialAdapter.Listen();
+	
+	OutputBuilder kakuroOutputBuilder = new KakuroOutputBuilder(serialAdapter, kakuroInputParser);
+	
+	kakuroOutputBuilder.sendProblem(problem);
+	
+	kakuroOutputBuilder.requestKakuro();
+	
+	Gui gui = new Gui(problem);
+	gui.setVisible(true);
+	/*
+	 * 
+	 * Modalità java: fa tutto in java
+	 *
 	problem.obtainLengthForCells();
 	problem.fillBlackSolutions();
 	problem.fillWhiteSolutions();
-	// problem.findSuitableSolutionsAmount();
-	//System.out.println(problem.toString());
-
+	
 	Node father = TreeSolver.initTree(problem);
 	TreeSolver.explore(father, problem);
 	Gui gui = new Gui(problem);
 	gui.setVisible(true);
+	*/
+
+	
 	
 		
 	}

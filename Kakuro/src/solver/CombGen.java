@@ -1,13 +1,8 @@
 package solver;
 import java.util.HashSet;
 import java.util.Set;
-
 import model.Solution;
-
-
 public class CombGen {
-	
-
 	public static Set<Solution> getPossibleCombinations(int num, int cells) {
 		Set<Solution> result = new HashSet<Solution>();
 		if(cells > 2){ // esplorazione delle soluzioni
@@ -27,7 +22,6 @@ public class CombGen {
 					}
 					if(validSolution) result.add(sol);
 				}
-				
 			}
 		}
 		else // cells == 2, caso radice
@@ -43,9 +37,6 @@ public class CombGen {
 				secondFactor--;
 			}
 		}
-		
 		return result;
 	}
-	
-	
 }

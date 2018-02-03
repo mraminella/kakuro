@@ -31,10 +31,12 @@ public class Problem {
 	public void initCells() { // Inizializza i puntatori della cella "a sinistra" e "sotto" di ogni risp. cella
 		for(int i=0;i<nRows;i++){
 			for(int j=0;j<nColumns;j++){
-				cells[i][j].i = i;
-				cells[i][j].j = j;
-				if(j + 1 < nColumns) cells[i][j].right = cells[i][j+1];
-				if(i + 1 < nRows) cells[i][j].down = cells[i+1][j];
+			//	if(cells[i][j] != null) {
+					cells[i][j].i = i;
+					cells[i][j].j = j;
+					if(j + 1 < nColumns) cells[i][j].right = cells[i][j+1];
+					if(i + 1 < nRows) cells[i][j].down = cells[i+1][j];
+			//	}
 			}
 		}
 	}
@@ -59,7 +61,6 @@ public class Problem {
 							cells[i][length].horizRule = cells[i][j];
 							length++;
 						}
-						cells[i][j].setHorizSumLength(length - j - 1);
 						
 					}
 					if(cells[i][j].getVertSum() > 0){ // ho un vincolo di somma verticale (parola verticale)
@@ -70,7 +71,6 @@ public class Problem {
 							cells[length][j].vertRule = cells[i][j];
 							length++;
 						}
-						cells[i][j].setVertSumLength(length - i - 1);
 						
 					}
 				}

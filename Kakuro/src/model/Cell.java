@@ -11,12 +11,19 @@ public class Cell {
 	private Set<Integer> domain;		// Se la cella è bianca, sono le possibili cifre trovate
 	private int horizSum;	// Il vincolo di somma orizzontale
 	private int vertSum;		/// Il vincolo di somma verticale
-	private int horizSumLength; 
+	private int horizSumLength;  // la lunghezza del vincolo orrizzon
 	private int vertSumLength; 
 	public int i;
 	public int j;
 	public Cell horizRule; // Se la cella è bianca, è un vettore alla cella nera
-							// che contiene la regola di somma orizzontale
+							public void setHorizSolutions(Set<Solution> horizSolutions) {
+		this.horizSolutions = horizSolutions;
+	}
+	public void setVertSolutions(Set<Solution> vertSolutions) {
+		this.vertSolutions = vertSolutions;
+	}
+
+	// che contiene la regola di somma orizzontale
 	public Cell vertRule;	// Idem con la regola verticale
 	public Cell right;		// La cella a destra
 	public Cell down;		// La cella sotto

@@ -19,42 +19,47 @@ public class ProblemReader {
 	final static String FILE_NAME = "problema.txt";
 	final static Charset ENCODING = StandardCharsets.UTF_8;
 
-
 	public static Problem readProblema() {
 		Problem result = null;
 		Path path = Paths.get(FILE_NAME);
 		try ( Scanner scanner = new Scanner(path,ENCODING.name()) ) {
-				String line;
-				int rows = Integer.parseInt(scanner.nextLine());
-				int columns = Integer.parseInt(scanner.nextLine());
-				result = new Problem(rows,columns);
-				int currentColumn = 0;
-				int currentRow = 0;
-				while(currentRow < rows) {
-					currentColumn = 0;
-					line = scanner.nextLine();
-					StringTokenizer st = new StringTokenizer(line);
-					while(currentColumn < columns){
-						int value = Integer.parseInt(st.nextToken("/").substring(1));
-						if(value == -1){
-							
-							result.setCell(currentRow, currentColumn, new Cell()); 
-							value = Integer.parseInt(st.nextToken(",").substring(1));
-							
-						} 
-						else {
-							//result.getCell(currentRow, currentColumn).setColor(Color.black);
-							int horizSum = value;
-							int vertSum =  Integer.parseInt(st.nextToken(",").substring(1));
-							result.setCell(currentRow, currentColumn, new Cell(horizSum,vertSum)); 
-						}
-						currentColumn++;
+			String line;
+			int rows = Integer.parseInt(scanner.nextLine());
+			int columns = Integer.parseInt(scanner.nextLine());
+			result = new Problem(rows,columns);
+			int currentColumn = 0;
+			int currentRow = 0;
+			while(currentRow < rows) {
+				currentColumn = 0;
+				line = scanner.nextLine();
+				StringTokenizer st = new StringTokenizer(line);
+				while(currentColumn < columns){
+					String token = st.nextToken(";");
+					if(token.contains("W")) {
+						result.setCell(currentRow, currentColumn, new Cell()); 
 					}
-					currentRow++;
+
+					else if (token.contains("B")) {
+						String rule1 = token.split("\\\\")[0];
+						rule1 = rule1.replaceAll("[^\\d.]", "");
+						String rule2 = token.split("\\\\")[1];
+						rule2 = rule2.replaceAll("[^\\d.]", "");
+						int vertSum = Integer.parseInt(rule1);
+						int horizSum = Integer.parseInt(rule2);
+						//result.getCell(currentRow, currentColumn).setColor(Color.black);
+						result.setCell(currentRow, currentColumn, new Cell(horizSum,vertSum)); 
+					}
+					else {
+						result.setCell(currentRow, currentColumn, new Cell(0,0)); 
+					}
+
+					currentColumn++;
 				}
-				
-				result.initCells();
-				
+				currentRow++;
+			}
+
+			result.initCells();
+
 		} catch (IOException e) {
 			System.out.println("File problema.txt inesistente o malformato");
 		}
